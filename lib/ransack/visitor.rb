@@ -38,19 +38,6 @@ module Ransack
       raise "not implemented"
     end
 
-    def visit_Ransack_Nodes_Sort(object)
-      if object.valid?
-        if object.attr.is_a?(Arel::Attributes::Attribute)
-          object.attr.send(object.dir)
-        else
-          ordered(object)
-        end
-      else
-        scope_name = :"sort_by_#{object.name}_#{object.dir}"
-        scope_name if object.context.object.respond_to?(scope_name)
-      end
-    end
-
     def visit(object)
       send(DISPATCH[object.class], object)
     end
@@ -60,16 +47,5 @@ module Ransack
         klass.name.gsub(Constants::TWO_COLONS, Constants::UNDERSCORE)
         }"
     end
-
-    private
-
-      def ordered(object)
-        case object.dir
-        when 'asc'.freeze
-          Arel::Nodes::Ascending.new(object.attr)
-        when 'desc'.freeze
-          Arel::Nodes::Descending.new(object.attr)
-        end
-      end
   end
 end
